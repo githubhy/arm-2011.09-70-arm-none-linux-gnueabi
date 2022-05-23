@@ -22,3 +22,5 @@ RUN dpkg --add-architecture i386 \
         && rm -rf /tmp/${EMBEDDED_PKG}
 
 ENV PATH="/opt/arm-2011.09/bin:${PATH}"
+
+ENV TZ Asia/Shanghai
