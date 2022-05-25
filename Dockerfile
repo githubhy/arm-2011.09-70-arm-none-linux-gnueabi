@@ -4,6 +4,11 @@ ARG EMBEDDED_PKG=arm-2011.09-70-arm-none-linux-gnueabi_stripped.tar.bz2
 
 COPY ${EMBEDDED_PKG} /tmp
 
+# Pakage `tzdata` should be installed to make the enviroment vairable `TZ` work
+# Setting the DEBIAN_FRONTEND environment variable suppresses the prompt that lets you select the correct timezone from a menu.
+ENV TZ Asia/Shanghai
+ENV DEBIAN_FRONTEND=noninteractive
+
 # The tool chain comes from https://sourcery.sw.siemens.com/GNUToolchain/kbentry62
 # Following the instruction inside, we can get the tool chain working as expected.
 # However, the pakages are mostly only needed for the setup UI so we can remove most of them, except lib32stdc++.
@@ -14,6 +19,7 @@ RUN dpkg --add-architecture i386 \
                 lib32stdc++6 \
                 make \
                 bzip2 \
+                tzdata \
         && apt-get autoremove -y \
         && apt-get clean \
         && rm -rf /var/lib/apt/lists/*rm /var/log/alternatives.log /var/log/apt/* \
@@ -22,5 +28,3 @@ RUN dpkg --add-architecture i386 \
         && rm -rf /tmp/${EMBEDDED_PKG}
 
 ENV PATH="/opt/arm-2011.09/bin:${PATH}"
-
-ENV TZ Asia/Shanghai
