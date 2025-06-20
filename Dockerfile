@@ -20,11 +20,26 @@ RUN dpkg --add-architecture i386 \
                 make \
                 bzip2 \
                 tzdata \
+                git \
+                openssh-server \
         && apt-get autoremove -y \
         && apt-get clean \
         && rm -rf /var/lib/apt/lists/*rm /var/log/alternatives.log /var/log/apt/* \
         && rm /var/log/* -r \
         && tar xjf /tmp/${EMBEDDED_PKG} -C /opt/ \
-        && rm -rf /tmp/${EMBEDDED_PKG}
+        && rm -rf /tmp/${EMBEDDED_PKG} \
+        && mkdir -p /var/run/sshd
 
 ENV PATH="/opt/arm-2011.09/bin:${PATH}"
+
+# Set root password (for demonstration, change in production)
+RUN echo 'root:root' | chpasswd
+
+# Allow root login via SSH (for demonstration, change in production)
+RUN sed -i 's/^#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+# Expose SSH port
+EXPOSE 22
+
+# Start SSH service by default
+CMD ["/usr/sbin/sshd", "-D"]
